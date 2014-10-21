@@ -51,9 +51,15 @@ public:
      * @return Pocet uzlu.
      */
     unsigned int size();
+
+    /**
+     * Matice hran mezi vsemi uzly, nekonecno pokud neexistuje.
+     * @return 2D matice.
+     */
+    double ** getMatrix();
 private:
     vector<Node*> nodes;
-    unsigned int ** matrix;
+    double ** matrix;
 };
 
 #endif

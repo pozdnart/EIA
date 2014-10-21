@@ -6,6 +6,7 @@
 #include <fstream>
 #include <ctime>
 #include <random>
+#include <limits>
 
 using namespace std;
 
@@ -30,11 +31,12 @@ void MyGraph::load(const string fileName) {
     ifs >> n;
     if(ifs.eof() || ifs.fail()) throw IOException();
 
-    matrix = new unsigned int *[n];
+    matrix = new double *[n];
 
     for(unsigned int i = 0; i < n; ++i) {
         nodes.push_back(new Node());
-        matrix[i] = new unsigned int[n];
+        matrix[i] = new double[n];
+        matrix[i][0] = numeric_limits<double>::max();
     }
 
     while(true) {
@@ -45,6 +47,9 @@ void MyGraph::load(const string fileName) {
             break;
         else if(ifs.fail())
             throw IOException();
+
+        matrix[u][v] = dist;
+        matrix[v][u] = dist;
 
         nodes.at(u)->addEdge(nodes.at(v), dist);
         nodes.at(v)->addEdge(nodes.at(u), dist);
@@ -74,4 +79,8 @@ Node * MyGraph::operator[](unsigned int i) {
 
 unsigned int MyGraph::size() {
     return nodes.size();
+}
+
+double ** MyGraph::getMatrix() {
+    return matrix;
 }
