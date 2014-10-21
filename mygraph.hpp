@@ -53,6 +53,7 @@ public:
     unsigned int size();
 private:
     vector<Node*> nodes;
+    unsigned int ** matrix;
 };
 
 #endif

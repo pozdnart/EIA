@@ -30,7 +30,12 @@ void MyGraph::load(const string fileName) {
     ifs >> n;
     if(ifs.eof() || ifs.fail()) throw IOException();
 
-    for(unsigned int i = 0; i < n; ++i) nodes.push_back(new Node());
+    matrix = new unsigned int *[n];
+
+    for(unsigned int i = 0; i < n; ++i) {
+        nodes.push_back(new Node());
+        matrix[i] = new unsigned int[n];
+    }
 
     while(true) {
         int u, v;
