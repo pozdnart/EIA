@@ -1,6 +1,6 @@
 #include "mygraph.hpp"
 #include "exception.hpp"
-#include <memory>
+#include "floydwarschall.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -10,12 +10,12 @@ using namespace std;
 /**
  * Kompilace: $ g++ -std=c++11 -Wall -pedantic main.cpp mygraph.cpp edge.cpp node.cpp -o graph
  * ./graph [string] ... Spusti program, nacte ze souboru.
- * ./graph [string] [double] [unsigned int] ... Generuje graf do souboru,
+ * ./graph [unsigned int] [double] [string] ... Generuje graf do souboru,
  * pravdepodobnost spojeni dvojice uzlu hranou, pocet uzlu.
  */
 int main(int argc, char* const argv[]) {
     ios::sync_with_stdio(false);
-    auto_ptr<MyGraph> graph(new MyGraph());
+    MyGraph * graph = new MyGraph();
 
     try {
         switch(argc) {
@@ -23,7 +23,7 @@ int main(int argc, char* const argv[]) {
                 graph->load(argv[1]);
 
                 // TODO dijkstra(graph);
-                // TODO floydMarschall(graph);
+                floydMarschall(graph);
 
                 break;
             }
@@ -52,6 +52,8 @@ int main(int argc, char* const argv[]) {
     catch(...) {
         cerr << "Neco se podelalo." << endl;
     }
+
+    delete graph;
 
     return 0;
 }
