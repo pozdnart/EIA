@@ -36,7 +36,7 @@ void MyGraph::load(const string fileName) {
     for(unsigned int i = 0; i < n; ++i) {
         nodes.push_back(new Node());
         matrix[i] = new double[n];
-        matrix[i][0] = numeric_limits<double>::max();
+        for(unsigned int j = 0; j < n; ++j) matrix[i][j] = numeric_limits<double>::max();
     }
 
     while(true) {
