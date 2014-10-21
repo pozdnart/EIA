@@ -1,0 +1,32 @@
+// node.hpp
+#ifndef NODE_HPP
+#define NODE_HPP
+
+#include <vector>
+
+using namespace std;
+
+class Edge;
+
+/**
+ * Uzel grafu, obsahuje hrany, ktere z nej vedou.
+ */
+class Node {
+public:
+    ~Node();
+    /**
+     * Prida hranu k uzlu.
+     * @param node Cilovu uzel.
+     * @param dist Velikost hrany.
+     */
+    void addEdge(Node * node, double dist);
+
+    /**
+     * @return Hrany vedouci z uzlu.
+     */
+    vector<Edge*> expand();
+private:
+    vector<Edge*> edges;
+};
+
+#endif
