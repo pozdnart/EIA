@@ -13,6 +13,8 @@ class Edge;
  */
 class Node {
 public:
+    Node(unsigned& ind);
+
     ~Node();
     /**
      * Prida hranu k uzlu.
@@ -21,12 +23,16 @@ public:
      */
     void addEdge(Node * node, double dist);
 
+    const unsigned& getIndex() const;
+
     /**
      * @return Hrany vedouci z uzlu.
      */
     vector<Edge*> expand();
 private:
     vector<Edge*> edges;
+
+    const unsigned index;
 };
 
 #endif

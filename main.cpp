@@ -1,6 +1,7 @@
 #include "mygraph.hpp"
 #include "exception.hpp"
 #include "floydwarschall.hpp"
+#include "dijkstra.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -22,7 +23,9 @@ int main(int argc, char* const argv[]) {
             case 2: {
                 graph->load(argv[1]);
 
-                // TODO dijkstra(graph);
+                CDijkstra dijkstra = CDijkstra(graph);
+                dijkstra.CalculateDistanceMatrix();
+                
                 floydMarschall(graph);
 
                 break;
