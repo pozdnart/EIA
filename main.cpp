@@ -6,6 +6,13 @@
 
 using namespace std;
 
+
+/**
+ * Kompilace: $ g++ -std=c++11 -Wall -pedantic main.cpp mygraph.cpp edge.cpp node.cpp -o graph
+ * ./graph [string] ... Spusti program, nacte ze souboru.
+ * ./graph [string] [double] [unsigned int] ... Generuje graf do souboru,
+ * pravdepodobnost spojeni dvojice uzlu hranou, pocet uzlu.
+ */
 int main(int argc, char* const argv[]) {
     ios::sync_with_stdio(false);
     auto_ptr<MyGraph> graph(new MyGraph());
