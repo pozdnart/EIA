@@ -1,7 +1,7 @@
 #include "mygraph.hpp"
 #include "exception.hpp"
 #include "floydwarschall.hpp"
-#include "dijkstra.hpp"
+#include "dijkstraBH.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
