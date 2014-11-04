@@ -23,8 +23,8 @@ public:
 	// Uklidi
 	~CDijkstra();
 
-	// Spocte vzdalenosti mezi vsemi dvojicemi uzlu a vypise distancni matici
-	void CalculateDistanceMatrix();
+	// Spocte vzdalenosti mezi vsemi dvojicemi uzlu a vrati distancni matici
+	double** CalculateDistanceMatrix();
 
 private:
 	// Distancni matice
@@ -52,4 +52,4 @@ private:
 	void printResult() const;
 };
 
-#endif 
+#endif

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void floydMarschall(MyGraph * graph) {
+double ** floydMarschall(MyGraph * graph) {
     double ** matrix = graph->getMatrix();
     unsigned int size = graph->size();
 
@@ -13,9 +13,5 @@ void floydMarschall(MyGraph * graph) {
                 matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j]);
             }
 
-    for(unsigned int k = 0; k < size; ++k)
-        for(unsigned int i = k+1; i < size; ++i)
-            if(matrix[k][i] != numeric_limits<double>::max())
-                cout << k << " " << i << " " << matrix[k][i] << endl;
-
+    return matrix;
 }

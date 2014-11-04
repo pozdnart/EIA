@@ -27,13 +27,13 @@ CDijkstra::~CDijkstra() {
 	delete [] m_CurrentDistances;
 }
 
-void CDijkstra::CalculateDistanceMatrix() {
+double** CDijkstra::CalculateDistanceMatrix() {
 	for (unsigned i = 0; i < m_Graph->size(); i++) {
 		runDijkstraFrom(i);
 		storeCalculatedDistances(i);
 	}
 
-	printResult();
+	return m_DistanceMatrix;
 }
 
 void CDijkstra::runDijkstraFrom(const int& nodeIndex) {
@@ -50,7 +50,7 @@ void CDijkstra::runDijkstraFrom(const int& nodeIndex) {
 		currentNodeDistance = m_PriorityQueue.top().second;
 		m_PriorityQueue.pop();
 
-		// STL prioritni fronta neumi decrease_key, proto se v ni mohou nachazet jiz neplatne vzdalenosti 
+		// STL prioritni fronta neumi decrease_key, proto se v ni mohou nachazet jiz neplatne vzdalenosti
 		// (pri nalezeni kratsi cesty se uzel prida do fronty znovu)
 		if (m_CurrentDistances[currentNodeIndex] < currentNodeDistance) {
 			continue;

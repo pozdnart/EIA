@@ -33,12 +33,12 @@ public:
     void load(const string fileName);
 
     /**
-     * Vygeneruje graf do souboru. Vzdalenosti jsou maximalne 100.0 velike. Haze vyjimku IOException.
+     * Vygeneruje graf do souboru. Vzdalenosti jsou <1,100>, prirozena cisla. Haze vyjimku IOException.
      * @param n Pocet uzlu.
-     * @param probability pravdepodobnost, ze z nejakeho uzlu 'u' do uzlu 'v' povede hrana.
+     * @param pocet Prumerny pocet hran z nejakeho uzlu 'u' do uzlu 'v'.
      * @param fileName Nazev souboru.
      */
-    void graphGen(int n, double probability, const string fileName);
+    void graphGen(int n, int pocet, const string fileName);
 
     /**
      * Operator []

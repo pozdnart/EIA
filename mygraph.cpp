@@ -56,18 +56,20 @@ void MyGraph::load(const string fileName) {
     }
 }
 
-void MyGraph::graphGen(int n, double probability, const string fileName) {
+void MyGraph::graphGen(int n, int pocet, const string fileName) {
     ofstream ofs(fileName.c_str());
     if(!ofs.is_open()) throw IOException();
+    if(n < 1 || pocet < 1) throw IllegalArgumentException();
     ofs << n << endl;
 
+    double probability = (double)pocet / n;
     srand((unsigned)time(NULL));
 
     for(int i = 0; i < n; ++i) {
         for(int j = i + 1; j < n; ++j) {
             double random = ((double)rand()/(double)RAND_MAX);
             if(random < probability) {
-                ofs << i << " " << j << " " << ((double)rand()/(double)RAND_MAX) * 100 << endl;
+                ofs << i << " " << j << " " << rand() % 100 + 1 << endl;
             }
         }
     }
