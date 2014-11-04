@@ -16,8 +16,9 @@ public:
     IllegalArgumentException() {
         cerr << "Hups, spatny format argumentu." << endl
         << "./graph [string] ... Spusti program, nacte ze souboru." << endl
-        << "./graph [string] [double] [unsigned int] ... Generuje graf do souboru, "
-        << "pravdepodobnost spojeni uzlu hranou a pocet uzlu." << endl;
+        << "./graph [string] [unsigned int] [unsigned int] ... Generuje graf do souboru, "
+        << "druhy parametr je pocet uzlu a treti parametr pocet hran, ktere v prumeru"
+        << "vedou z nejakeho uzlu." << endl;
     }
 };
 
