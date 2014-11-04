@@ -3,7 +3,7 @@
 
 using namespace std;
 
-double ** floydMarschall(MyGraph * graph) {
+double ** floydWarschall(MyGraph * graph) {
     double ** matrix = graph->getMatrix();
     unsigned int size = graph->size();
 

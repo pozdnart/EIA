@@ -50,16 +50,16 @@ int main(int argc, char* const argv[]) {
                 cout << "Dijkstra:\t" << elapsed_secs << " sec" << endl;
 
                 begin = clock();
-                ofs.open("floydmarshall.out");
+                ofs.open("floydwarshall.out");
                 if(!ofs.is_open()) throw IOException();
 
-                matrix = floydMarschall(graph);
+                matrix = floydWarschall(graph);
                 printMatrix(ofs, matrix, graph->size());
                 ofs.close();
                 end = clock();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
-                cout << "FloydMarshall:\t" << elapsed_secs << " sec" << endl;
+                cout << "FloydWarshall:\t" << elapsed_secs << " sec" << endl;
 
                 break;
             }
