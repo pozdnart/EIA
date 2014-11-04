@@ -29,6 +29,8 @@ CDijkstra::~CDijkstra() {
 
 double** CDijkstra::CalculateDistanceMatrix() {
 	for (unsigned i = 0; i < m_Graph->size(); i++) {
+		if (! (i % 100))
+			cout << "i: " << i << "/" << m_Graph->size() << endl;
 		runDijkstraFrom(i);
 		storeCalculatedDistances(i);
 	}

@@ -24,13 +24,13 @@ CDijkstra::~CDijkstra() {
 	delete m_BinaryHeap;
 }
 
-void CDijkstra::CalculateDistanceMatrix() {
+double** CDijkstra::CalculateDistanceMatrix() {
 	for (unsigned i = 0; i < m_Graph->size(); i++) {
 		runDijkstraFrom(i);
 		storeCalculatedDistances(i);
 	}
 
-	printResult();
+	return m_DistanceMatrix;
 }
 
 void CDijkstra::runDijkstraFrom(const int& nodeIndex) {
