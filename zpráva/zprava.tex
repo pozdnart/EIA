@@ -74,13 +74,18 @@ Prvním byla výměna původně použité prioritní fronty z STL za vlastní im
 Druhý pokus o optimalizaci proběhnul pomocí použití různých přepínačů při kompilaci v gcc.
 \begin{itemize}
  \item \textbf{-O3} - zapnutí plných optimalizací cílového kódu.
- \item \textbf{-march=opteron} - využití všech instrukcí na cílovém procesoru.
- \item \textbf{-mpc32} - zaokrouhlení FP výpočtů.
- \item \textbf{-msseregparm} - použití SSE registrů pro předání parametrů funkcí. Chtěli jsme použít i \textbf{mregparm=3}, což zablokovalo g++ (-mregparm is ignored in 64-bit mode). 
  \item \textbf{-mffast-math} - zrychlené vyhodnocení matematických výrazů.
- \item Naopak jsme nepoužili vektorové instrukce SSE. Potvrdila se do\-mněn\-ka, že v Dijkstrově algoritmu jsou zbytečné a jejich použití program zpomalí.
+ \item \textbf{-msse4.2} - zapnutí vektorových instrukcí.
+ \item \textbf{-mfpmath=sse} - použití SSE instrukcí místo klasických FP.
+ \item \textbf{-msseregparm} - předávání FP dat přes SSE registry.
+ \item \textbf{-mpc32} - zaokrouhlení FP výpočtů.
+ \item \textbf{-ffast-math} - urychlené provádění výpočtů.
 \end{itemize}
-TODO.
+ Naopak testované, ale nakonec nepoužité zůstaly (neměly pozitivní vliv na rychlost): 
+\begin{itemize}
+ \item \textbf{-march=opteron} i \textbf{-march=barcelona}  - využití všech instrukcí na cílovém procesoru.
+ \item \textbf{-regparm1..3} - jejich použití vyvalávalo na Staru segfault.
+\end{itemize}
 
 \subsection{Floyd-Warshallův algoritmus}
 Loop-tiling, loop unrolling, vektorizace? TODO.
