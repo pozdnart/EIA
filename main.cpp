@@ -33,30 +33,30 @@ int main(int argc, char* const argv[]) {
             case 2: {
                 graph->load(argv[1]);
 
-                ofstream ofs;
+                //ofstream ofs;
 
-                ofs.open("dijkstra.out");
-                if(!ofs.is_open()) throw IOException();
+                //ofs.open("dijkstra.out");
+                //if(!ofs.is_open()) throw IOException();
 
                 double ** matrix;
                 CDijkstra dijkstra = CDijkstra(graph);
                 clock_t begin = clock();
                 matrix = dijkstra.CalculateDistanceMatrix();
                 clock_t end = clock();
-                printMatrix(ofs, matrix, graph->size());
-                ofs.close();
+                //printMatrix(ofs, matrix, graph->size());
+                //ofs.close();
 
                 double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
                 cout << "Dijkstra:\t" << elapsed_secs << " sec" << endl;
 
-                ofs.open("floydwarshall.out");
-                if(!ofs.is_open()) throw IOException();
+                //ofs.open("floydwarshall.out");
+                //if(!ofs.is_open()) throw IOException();
                 begin = clock();
                 matrix = floydWarschall(graph);
                 end = clock();
-                printMatrix(ofs, matrix, graph->size());
-                ofs.close();
+                //printMatrix(ofs, matrix, graph->size());
+                //ofs.close();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
                 cout << "FloydWarshall:\t" << elapsed_secs << " sec" << endl;
