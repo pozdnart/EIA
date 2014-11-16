@@ -1,0 +1,50 @@
+Hledání nejkratších cest v grafu
+Implementujte minimálně tyto algoritmy hledání nejkratších cest v grafu (mezi všema dvojicemi uzlů):
+loop unrolling, vektorizace, loop-tiling
+
+Kapitola 1
+	Definice problému
+Naším úkolem v rámci semestrálního projektu v předmětu BI-EIA je implementace a optimalizace dvou algoritmů pro hledání nejkratších cest. Vstupem programu je tedy graf zadaný výčtem hran grafu a výstupem délka nejkratší cesty pro každou dvojici uzlů.
+Pro řešení problému jsme implementovali dva algoritmy, první je Dijkstrův, druhý Floyd-Warshallův. Jejich stručný popis a informace o základní implementaci jsou obsahem následující části.
+
+	Dijkstrův algoritmus
+Dijkstrův algoritmus funguje obdobně jako prohledávání do šířky, jenom místo obyčejné fronty používá prioritní frontu. Do té jsou před během algoritmu přesunuty všechny uzlu, počáteční z nulovou, zbylé s inf vzdáleností. Poté se až do vyprázdnění fronty vybere nejbližší uzel a pro všechny jeho sousedy se vyzkouší, zda byla nelezena zkracující cesta (relaxace). 
+Běžná verze Dijkstrova algoritmu je určena pro hledání nejkratších cest z jednoho zadaného uzlu do všech ostatních, proto ho musíme v našem řešení volat n-krát, tedy z každého uzlu. Asymptotická složitost Dijkstrova algoritmu závisí na dvou faktorech. Jednak se jedná o vnitřní reprezentaci grafu (seznam uzlů a jejich sousedů/matice sousednosti) a dále o způsobu implementaci prioritní fronty, kterou algoritmus využívá.
+V rámci snahy o kompromis mezi rozumnou rychlostí a dostatečnou možností kód následně optimalizovat jsme použili kombinaci distanční matice a prioritní fronty řešené pomocí binární haldy. Tato kombinace má při hledání nejkratších cest mezi všemi dvojicemi uzlů asymptotickou složitost O(|V|*(|E|+|V|)*log(V)).
+
+	Floyd-Warshallův algoritmus
+Floyd-Warshallův algoritmus hledá nejkratší cesty metodou postupné konstrukce. Skládá se ze tří do sebe vnořených cyklů, které iterují přes všechny uzly grafu. Vnější cyklus určuje prostředníka, přes které se algoritmus právě snaží nalézt zlepšující cestu, dva vnitřní cykly poté určují dvojici koncových uzlů.
+Jako vnitřní reprezentace grafu je použita matice sousednosti, která je postupem algoritmu přepsaná na distanční matici. Asymptotická složitost Floyd-Warshallova algoritmu je O(|V|^3).
+
+	Porovnání algoritmů
+Pro řídké grafy (|E| ~ |V|) má Dijkstrův algoritmus (s použitím binární haldy) nižší teoretickou složitost než Floyd-Warshallův. Nicméně se dá očekávat, že při reálném použití u grafů, které jsme schopni v rozumném čase na poskytnutém HW upočítat (~ tisíce uzlů) bude Floyd-Warshallův algortimus rychlejší, jelikož potřebuje vykonat v nejvnitřnějším cyklu mnohem méně operací než Dijkstrův.
+
+	Popis souborů implementace
+
+Optimalizace sekvenční verze algoritmu
+	Úpravy algoritmů
+V rámci optimalizace sekvenční verze jsme provedli následující úpravy. Měření a porovnání s neoptimalizovanou verzí je uvedeno na konci kapitoly.
+
+		Dijkstrův algoritmus
+Jelikož nebylo Dijkstrův algoritmus možné optimalizovat klasickými metodami (datová provázanost, nemožnost rozbalit vnitřní cyklus kvůli komplikované datové struktuře), pokusili jsme se řešení optimalizovat dvěma jinými způsoby. 
+Prvním byla výměna původně použité prioritní fronty z STL za vlastní implementaci, která navíc podporuje operaci decreaseKey a tudíž není potřeba u každého uzlu vyňatého z fronty testovat, zda je jeho hodnota klíče aktuální (zkrátka není nutné používat reinserting).
+Druhý pokus optimalizace proběhnul pomocí použití různých přepínačů při kompilaci v gcc. TODO.
+
+		Floyd-Warshallův algoritmus
+Loop-tiling, loop unrolling, vektorizace? TODO.
+
+	Popis případných úprav algoritmu a jeho implementace, včetně volby datových struktur
+
+	Tabulkově a případně graficky zpracované naměřené hodnoty časové složitosti měřených instancí běhu programu s popisem instancí dat, přepočet výkonnosti programu na MIPS nebo MFlops.
+
+	Analýza a hodnocení vlastností dané implementace programu.
+
+Kapitola 3 (pro OpenMP)
+	Popis případných úprav algoritmu a jeho implementace, včetně volby datových struktur
+	Tabulkově a případně graficky zpracované naměřené hodnoty časové složitosti měřených instancí běhu programu s popisem instancí dat, přepočet výkonnosti programu na MIPS nebo MFlops.
+	Analýza a hodnocení vlastností dané implementace programu.
+
+Kapitola 4
+	Závěr
+
+Literatura

@@ -1,0 +1,76 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hhline}
+\usepackage[unicode]{hyperref}
+\usepackage{amsmath}
+\pagenumbering{arabic}
+
+\begin{titlepage}
+\title{Hledání nejkratších cest v grafu}
+\date{\today}
+\author{Tomáš Duda a Artemij Pozdňakov \\ dudatom2@fit.cvut.cz a pozdnart@fit.cvut.cz}
+\end{titlepage}
+
+\begin{document}
+
+% Uvodni stranka
+\maketitle
+\newpage
+
+% Obsah
+\tableofcontents
+\newpage
+
+% Definici problému
+% Popis sekvenčního algoritmu a jeho implementace
+\section{Řešený problém a základní implementace}
+\subsection{Definice problému}
+Naším úkolem v rámci semestrálního projektu v předmětu BI-EIA je implementace a optimalizace dvou algoritmů pro hledání nejkratších cest. Vstupem programu je tedy graf zadaný výčtem hran grafu a výstupem délka nejkratší cesty pro každou dvojici uzlů.
+Pro řešení problému jsme implementovali dva algoritmy, první je Dijkstrův, druhý Floyd-Warshallův. Jejich stručný popis a informace o základní implementaci jsou obsahem následující části.
+
+\subsection{Dijkstrův algoritmus}
+Dijkstrův algoritmus funguje obdobně jako prohledávání do šířky, jenom místo obyčejné fronty používá prioritní frontu. Do té jsou před během algoritmu přesunuty všechny uzlu, počáteční z nulovou, zbylé s inf vzdáleností. Poté se až do vyprázdnění fronty vybere nejbližší uzel a pro všechny jeho sousedy se vyzkouší, zda byla nelezena zkracující cesta (relaxace). 
+Běžná verze Dijkstrova algoritmu je určena pro hledání nejkratších cest z jednoho zadaného uzlu do všech ostatních, proto ho musíme v našem řešení volat n-krát, tedy z každého uzlu. Asymptotická složitost Dijkstrova algoritmu závisí na dvou faktorech. Jednak se jedná o vnitřní reprezentaci grafu (seznam uzlů a jejich sousedů/matice sousednosti) a dále o způsobu implementaci prioritní fronty, kterou algoritmus využívá.
+V rámci snahy o kompromis mezi rozumnou rychlostí a dostatečnou možností kód následně optimalizovat jsme použili kombinaci distanční matice a prioritní fronty řešené pomocí binární haldy. Tato kombinace má při hledání nejkratších cest mezi všemi dvojicemi uzlů asymptotickou složitost $\mathcal{O}(|V|(|E|+|V|)\log{|V|})$ (V je množina uzlů a E je množina hran).
+
+\subsection{Floyd-Warshallův algoritmus}
+Floyd-Warshallův algoritmus hledá nejkratší cesty metodou postupné konstrukce. Skládá se ze tří do sebe vnořených cyklů, které iterují přes všechny uzly grafu. Vnější cyklus určuje prostředníka, přes které se algoritmus právě snaží nalézt zlepšující cestu, dva vnitřní cykly poté určují dvojici koncových uzlů.
+Jako vnitřní reprezentace grafu je použita matice sousednosti, která je postupem algoritmu přepsaná na distanční matici. Asymptotická složitost Floyd-Warshallova algoritmu je $\mathcal{O}(|V|^3)$
+
+\subsection{Porovnání algoritmů}
+Pro řídké grafy ($|E|\sim|V|$) má Dijkstrův algoritmus (s použitím binární haldy) nižší teoretickou složitost než Floyd-Warshallův. Nicméně se dá očekávat, že při reálném použití u grafů, které jsme schopni v rozumném čase na poskytnutém HW upočítat ($\sim$ tisíce uzlů) bude Floyd-Warshallův algoritmus rychlejší, jelikož potřebuje vykonat v nejvnitřnějším cyklu mnohem méně operací než Dijkstrův.
+
+\subsection{Popis souborů}
+\begin{itemize}
+ \item main.cpp \currfilename
+\end{itemize}
+
+
+
+
+% Popis případných úprav algoritmu a jeho implementace, včetně volby datových struktur
+% Tabulkově a případně graficky zpracované naměřené hodnoty časové složitosti měřených instancí běhu programu s popisem instancí dat, přepočet výkonnosti programu na MIPS nebo MFlops.
+% Analýza a hodnocení vlastností dané implementace programu.
+\section{Optimalizovaná verze sekvenčního algoritmu}
+
+% Popis případných úprav algoritmu a jeho implementace, včetně volby datových struktur
+% Tabulkově a případně graficky zpracované naměřené hodnoty časové složitosti měřených instancí běhu programu s popisem instancí dat, přepočet výkonnosti programu na MIPS nebo MFlops.
+% Analýza a hodnocení vlastností dané implementace programu.
+\section{Vícevláknová implementace}
+
+% Závěr
+\section{Závěr}
+
+
+\newpage
+\begin{thebibliography}{1}
+  \bibitem[1]{Kolar} KOLÁŘ, Josef.
+    \emph{Teoretická informatika}.
+    Česká informatická společnost, Praha, 2004. 205s.
+\end{thebibliography}
+
+\end{document}
+
