@@ -64,18 +64,127 @@ Pro řídké grafy ($|E|\sim|V|$) má Dijkstrův algoritmus (s použitím binár
 % Analýza a hodnocení vlastností dané implementace programu.
 \section{Optimalizovaná verze sekvenčního algoritmu}
 Následující kapitola popisuje optimalizace provedené v sekvenčních verzích implementace a následné výsledky meření různých verzí.
+
 \subsection{Dijkstrův algoritmus}
 Jelikož nebylo Dijkstrův algoritmus možné optimalizovat klasickými metodami (vysoká datová provázanost, nemožnost rozbalit vnitřní cyklus kvůli komplikované datové struktuře), pokusili jsme se řešení optimalizovat dvěma jinými způsoby. 
 \par
+
 Prvním byla výměna původně použité prioritní fronty z STL za vlastní implementaci, která navíc podporuje operaci decreaseKey a tudíž není po\-třeba u každého uzlu vyňatého z fronty testovat, zda je jeho hodnota klíče aktuální (zkrátka není nutné používat reinserting).
 \par
+
 Druhý pokus optimalizace proběhnul pomocí použití různých přepínačů při kompilaci v gcc. TODO.
 \subsection{Floyd-Warshallův algoritmus}
 Loop-tiling, loop unrolling, vektorizace? TODO.
+
 \subsection{Popis testovacích instancí}
-TODO.
+Výběr testovacích instancí pro testování a porovnání obou implementovaných algoritmů byl poměrně komplikovaný. Dijkstrův algoritmus je narozdíl od Floyd-Warhsallova citlivý na vstupní data, tudíž nylo nutné, aby se jednotlivé testovací grafy lišily nejenom v počtu uzlů, ale i v počtu hran. 
+\par
+Floyd-Warshallův algoritmus se navíc ukázal být o hodně výkonnějším, tudíž zatímco neoptimalizovaná implementace Dijkstrova algoritmu na nej\-větší instanci za 60 minut na testovacím serveru nedoběhla, Floyd-Warshall ji upočítal za 10 minut.
+\par
+Vybrali jsme tedy grafy o čtyřech různých velikostech, co do počtu uzlů (800, 1600, 2400 s 3200) a u každého z nich tři různé instance lišící se poštem hran. První z trojice je vždy řídký graf (obsahuje přibližně desetinu hran, co graf úplný), druhý obsahuje přibližně polovinu hran úplného grafu a třetí je hustý, obsahuje 90 \% hran úplného grafu.
+\begin{table}[H]
+  \begin{center}
+      \begin{tabular}{|r|r|r|}
+      \hline
+      Název souboru 	& Počet uzlů  	& Počet hran  		\\ \hline
+      graf800\_80  	& 800    	& 31521             	\\ \hline
+      graf800\_400     	& 800    	& 160035        	\\ \hline
+      graf800\_720  	& 800    	& 287590             	\\ \hline
+      graf1600\_160    	& 1600    	& 128022          	\\ \hline
+      graf1600\_800  	& 1600    	& 639663             	\\ \hline
+      graf1600\_1400   	& 1600    	& 1151713          	\\ \hline
+      graf2400\_240  	& 2400    	& 289420             	\\ \hline
+      graf2400\_1200   	& 2400    	& 1439793          	\\ \hline
+      graf2400\_2160  	& 2400    	& 2591136             	\\ \hline
+      graf3200\_320    	& 3200    	& 513016          	\\ \hline
+      graf3200\_1600  	& 3200    	& 2560196             	\\ \hline
+      graf3200\_2880   	& 3200    	& 4608704          	\\ \hline
+      \end{tabular}
+  \caption{Vlastnosti grafů, na kterých byly testovány sekvenční implementace algoritmů.}
+  \label{tab:instance}
+  \end{center}
+\end{table}
+
+
 \subsection{Měření a porovnání výkonosti různých sekvenčních verzí}
-Uvádět výkonost v MFlops. TODO.
+V následující části jsou uvedeny výsledky meření jednotlivých typů implementací. Údaje jsou uváděny jednak v sekundách (reálná doba běhu na serveru STAR) a v MFPLOPS. Zatímco i Floyd-Warshallova algoritmu můžeme počítat s~$2|V|^3$ operací v plovoucí čárce na jeden běh, u Dijkstrova algoritmu je situace o trochu komplikovanější, protože počet operací v FP závisí na podobě vstupního grafu a odhady pomocí složitosti nebyly příliš přesné. Změřili jsme tedy počet FP operací pro jednotlivé testovací instance.
+\begin{table}[H]
+  \begin{center}
+      \begin{tabular}{|r|r|}
+      \hline
+      Název souboru 	& FP operací  	\\ \hline
+      graf800\_80  	& 115,283 M            		\\ \hline
+      graf800\_400     	& 524,098 M    		     	\\ \hline
+      graf800\_720  	& 932,637 M    	            	\\ \hline
+      graf1600\_160    	& 879,441 M    	        	\\ \hline
+      graf1600\_800  	& 4,139 G    	           	\\ \hline
+      graf1600\_1400   	& 7,414 G    	         	\\ \hline
+      graf2400\_240  	& 2,912 G    	          	\\ \hline
+      graf2400\_1200   	& 13,929 G    	         	\\ \hline
+      graf2400\_2160  	& 24,956 G    	            	\\ \hline
+      graf3200\_320    	& 6,800 G             		\\ \hline
+      graf3200\_1600  	& 32,963 G    	            	\\ \hline
+      graf3200\_2880   	& 59,136 G    	         	\\ \hline
+      \end{tabular}
+  \caption{Počet FP operací potřebných k běhu Dijkstrova algoritmu pro jednotlivé instance.}
+  \label{tab:fp_operace}
+  \end{center}
+\end{table}
+
+\subsubsection{Měření Dijkstrova algoritmu}
+V následující tabulce jsou naměřené hodnoty pro Dijkstrův algoritmus. Mě\-ře\-na byla jednak verze, která využívá prioritní frontu z STL, poté verze používající prioritní frontu s podporou operace decreaseKey, třetí verze byla kompilovaná s pře\-pí\-načem \textbf{-O3} a nakonec verze, ve které byly použity další pře\-pí\-nače vypsané v sekci Optimalizovaná verze sekvenčních algoritmů.
+\par
+Kromě dramatického nárustu výkonu při použití optimalizací kom\-pi\-látoru jde z měření vypozorovat, že Dijkstrův algoritmus je nejsilnější na menších grafech s nízkým počtem hran.
+\begin{table}[H]
+  \begin{center}
+      \begin{tabular}{|r|r|r|r|r|}
+      \hline
+      Instance  	& STL	  & BH    & -O3	 & g++ opt  \\ \hline
+      graf800\_80  	& 11,9  & 20,8	  & 50,8 &          \\ \hline
+      graf800\_400     	& 15,5  & 16,7 	  & 25,5 &	    \\ \hline
+      graf800\_720  	& 13,0  & 15,9 	  & 28,9 &	    \\ \hline
+      graf1600\_160    	& 12,3  & 16,9 	  & 28,4 &	    \\ \hline
+      graf1600\_800  	& 14,4  & 15,6 	  & 26,6 &	    \\ \hline
+      graf1600\_1400   	& 14,8  & 16,4 	  & 25,4 &	    \\ \hline
+      graf2400\_240  	& 11,8  & 15,3	  & 25,1 &          \\ \hline
+      graf2400\_1200   	& 14,2  & 15,4	  & 24,8 &          \\ \hline
+      graf2400\_2160  	& 14,8  & 12,6	  & 25,1 &          \\ \hline
+      graf3200\_320    	& 12,3  & 12,7	  & 23,7 &          \\ \hline
+      graf3200\_1600  	& 14,3  & 14,9	  & 25,0 &          \\ \hline
+      graf3200\_2880   	& x    	& x 	  & 25,1 &          \\ \hline
+      \end{tabular}
+  \caption{Naměřené výsledky pro Dijkstrův algoritmus. Hodnoty jsou v~MFLOPS. Políčka, ve kterých je uvedeno x značí, že pro ně algoritmus nedokázal doběhnout ve stanoveném limitu 60 minut.}
+  \label{tab:dijkstra1}
+  \end{center}
+\end{table}
+
+
+\subsubsection{Měření Floyd-Warshallova algoritmu}
+TODO popis výsledků a efektivity optimalizací.
+\begin{table}[H]
+  \begin{center}
+      \begin{tabular}{|r|r|r|r|r|}
+      \hline
+      Instance  	& Základní  & -O3     & ???	 & ???  \\ \hline
+      graf800\_80  	& 129,0     & 975,2   &  &          \\ \hline
+      graf800\_400     	& 130,4     & 890,4   &  &	    \\ \hline
+      graf800\_720  	& 129,3     & 1402,7  &  &	    \\ \hline
+      graf1600\_160    	& 125,2     & 686,7   &  &	    \\ \hline
+      graf1600\_800  	& 125,3     & 688,4   &  &	    \\ \hline
+      graf1600\_1400   	& 125,2     & 680,9   &  &	    \\ \hline
+      graf2400\_240  	& 126,0     & 670,7   &  &          \\ \hline
+      graf2400\_1200   	& 126,1     & 671,0   &  &          \\ \hline
+      graf2400\_2160  	& 126,4     & 670,0   &  &          \\ \hline
+      graf3200\_320    	& 125,8     & 665,6   &  &          \\ \hline
+      graf3200\_1600  	& 126,0     & 663,6   &  &          \\ \hline
+      graf3200\_2880   	& 125,9     & 662,9   &  &          \\ \hline
+      \end{tabular}
+  \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
+  \label{tab:fw1}
+  \end{center}
+\end{table}
+
+
 
 % Popis případných úprav algoritmu a jeho implementace, včetně volby datových struktur
 % Tabulkově a případně graficky zpracované naměřené hodnoty časové složitosti měřených instancí běhu programu s popisem instancí dat, přepočet výkonnosti programu na MIPS nebo MFlops.
