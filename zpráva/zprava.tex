@@ -71,8 +71,17 @@ Jelikož nebylo Dijkstrův algoritmus možné optimalizovat klasickými metodami
 
 Prvním byla výměna původně použité prioritní fronty z STL za vlastní implementaci, která navíc podporuje operaci decreaseKey a tudíž není po\-třeba u každého uzlu vyňatého z fronty testovat, zda je jeho hodnota klíče aktuální (zkrátka není nutné používat reinserting).
 \par
+Druhý pokus o optimalizaci proběhnul pomocí použití různých přepínačů při kompilaci v gcc.
+\begin{itemize}
+ \item \textbf{-O3} - zapnutí plných optimalizací cílového kódu.
+ \item \textbf{-march=opteron} - využití všech instrukcí na cílovém procesoru.
+ \item \textbf{-mpc32} - zaokrouhlení FP výpočtů.
+ \item \textbf{-msseregparm} - použití SSE registrů pro předání parametrů funkcí. Chtěli jsme použít i \textbf{mregparm=3}, což zablokovalo g++ (-mregparm is ignored in 64-bit mode). 
+ \item \textbf{-mffast-math} - zrychlené vyhodnocení matematických výrazů.
+ \item Naopak jsme nepoužili vektorové instrukce SSE. Potvrdila se do\-mněn\-ka, že v Dijkstrově algoritmu jsou zbytečné a jejich použití program zpomalí.
+\end{itemize}
+TODO.
 
-Druhý pokus optimalizace proběhnul pomocí použití různých přepínačů při kompilaci v gcc. TODO.
 \subsection{Floyd-Warshallův algoritmus}
 Loop-tiling, loop unrolling, vektorizace? TODO.
 

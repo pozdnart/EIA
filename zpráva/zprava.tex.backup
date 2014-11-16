@@ -165,22 +165,22 @@ TODO popis výsledků a efektivity optimalizací.
   \begin{center}
       \begin{tabular}{|r|r|r|r|r|}
       \hline
-      Instance  	& Základní  & -O3    & ???	 & ???  \\ \hline
-      graf800\_80  	& 1  & 20,8	  &  &          \\ \hline
-      graf800\_400     	& 15,5  & 16,7 	  &  &	    \\ \hline
-      graf800\_720  	& 13,0  & 15,9 	  &  &	    \\ \hline
-      graf1600\_160    	& 12,3  & 16,9 	  &  &	    \\ \hline
-      graf1600\_800  	& 14,4  & 15,6 	  &  &	    \\ \hline
-      graf1600\_1400   	& 14,8  & 16,4 	  &  &	    \\ \hline
-      graf2400\_240  	& 11,8  & 15,3	  &  &          \\ \hline
-      graf2400\_1200   	& 14,2  & 15,4	  &  &          \\ \hline
-      graf2400\_2160  	& 14,8  & 12,6	  &  &          \\ \hline
-      graf3200\_320    	& 12,3  & 12,7	  &  &          \\ \hline
-      graf3200\_1600  	& 14,3  & 14,9	  &  &          \\ \hline
-      graf3200\_2880   	& x    	& x 	  &  &          \\ \hline
+      Instance  	& Základní  & -O3     & ???	 & ???  \\ \hline
+      graf800\_80  	& 129,0     & 975,2   &  &          \\ \hline
+      graf800\_400     	& 130,4     & 890,4   &  &	    \\ \hline
+      graf800\_720  	& 129,3     & 1402,7  &  &	    \\ \hline
+      graf1600\_160    	& 125,2     & 686,7   &  &	    \\ \hline
+      graf1600\_800  	& 125,3     & 688,4   &  &	    \\ \hline
+      graf1600\_1400   	& 125,2     & 680,9   &  &	    \\ \hline
+      graf2400\_240  	& 126,0     & 670,7   &  &          \\ \hline
+      graf2400\_1200   	& 126,1     & 671,0   &  &          \\ \hline
+      graf2400\_2160  	& 126,4     & 670,0   &  &          \\ \hline
+      graf3200\_320    	& 125,8     & 665,6   &  &          \\ \hline
+      graf3200\_1600  	& 126,0     & 663,6   &  &          \\ \hline
+      graf3200\_2880   	& 125,9     & 662,9   &  &          \\ \hline
       \end{tabular}
-  \caption{Naměřené výsledky pro Dijkstrův algoritmus. Hodnoty jsou v~MFLOPS. Políčka, ve kterých je uvedeno x značí, že pro ně algoritmus nedokázal doběhnout ve stanoveném limitu 60 minut.}
-  \label{tab:dijkstra1}
+  \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
+  \label{tab:fw1}
   \end{center}
 \end{table}
 
