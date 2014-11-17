@@ -53,6 +53,7 @@ Pro řídké grafy ($|E|\sim|V|$) má Dijkstrův algoritmus (s použitím binár
  \item \textbf{node.cpp} a \textbf{edge.cpp} obsahují pomocné třídy pro uložení uzlu nebo hrany v grafu.
  \item \textbf{floydwarshall.cpp} implementuje Floyd-Warshallův algoritmus.
  \item \textbf{dijkstra.cpp} implementuje Dijkstrův algoritmus.
+ \item \textbf{binary\_heap.cpp} poskytuje prioritní frontu přes binární haldu.
  \item \textbf{exception.cpp} definuje výjimku, která je použita při spuštění programu s chybnými argumenty.
 \end{itemize}
 
@@ -66,11 +67,11 @@ Pro řídké grafy ($|E|\sim|V|$) má Dijkstrův algoritmus (s použitím binár
 Následující kapitola popisuje optimalizace provedené v sekvenčních verzích implementace a následné výsledky meření různých verzí.
 
 \subsection{Dijkstrův algoritmus}
-Jelikož nebylo Dijkstrův algoritmus možné optimalizovat klasickými metodami (vysoká datová provázanost, nemožnost rozbalit vnitřní cyklus kvůli komplikované datové struktuře), pokusili jsme se řešení optimalizovat dvěma jinými způsoby. 
+Jelikož nebylo Dijkstrův algoritmus možné optimalizovat klasickými metodami (vysoká datová provázanost, nemožnost rozbalit vnitřní cyklus kvůli komplikované datové struktuře), pokusili jsme se řešení optimalizovat více jinými způsoby. 
 \par
-
+\subsubsection{Úprava algoritmu}
 Prvním byla výměna původně použité prioritní fronty z STL za vlastní implementaci, která navíc podporuje operaci decreaseKey a tudíž není po\-třeba u každého uzlu vyňatého z fronty testovat, zda je jeho hodnota klíče aktuální (zkrátka není nutné používat reinserting).
-\par
+\subsubsection{Přepínače gcc}
 Druhý pokus o optimalizaci proběhnul pomocí použití různých přepínačů při kompilaci v gcc.
 \begin{itemize}
  \item \textbf{-O3} - zapnutí plných optimalizací cílového kódu.
@@ -86,12 +87,16 @@ Druhý pokus o optimalizaci proběhnul pomocí použití různých přepínačů
  \item \textbf{-march=opteron} i \textbf{-march=barcelona}  - využití všech instrukcí na cílovém procesoru.
  \item \textbf{-regparm1..3} - jejich použití vyvalávalo na Staru segfault.
 \end{itemize}
+\subsubsection{Profiling}
+V rámci profilingu jsme měřili čas strávený v jednotlivých řádkách kódu. Jako velmi neefektivní se ukázaly být vectory a iterátory z STL, které jsme nahradili obyčejným polem. Dále jsme zkusili odbourat zapouzdření v datových strukturách reprezentující graf, pomocí výčtu sousedů. Poslední úpravou, kterou se povedlo zlepšit čas běhu, bylo důsledné předpočítání všech položek (vzdáleností a indexů) před operací relaxace (v nejvnitřnějším cyklu Dijk\-strova algoritmu).
+\par
+Po všech úpravách profiler ukazuje, že přes 80 \% veškerého času tráví program přístupem do pole, ve kterém jsou uloženy aktuální vzdálenosti. To už se nám nepodařilo vylepšit. Přístup do tohoto pole není sekvenční (získáváme z něj vzdálenosti sousedů uzlu, který je aktuálně vytažen z prioritní fronty, tyto vzdálenosti mohou být na libovolném místě), a proto nemůžeme data z toho pole nějak "předpřipravit" před samotným výpočtem.
 
 \subsection{Floyd-Warshallův algoritmus}
 Loop-tiling, loop unrolling, vektorizace? TODO.
 
 \subsection{Popis testovacích instancí}
-Výběr testovacích instancí pro testování a porovnání obou implementovaných algoritmů byl poměrně komplikovaný. Dijkstrův algoritmus je narozdíl od Floyd-Warhsallova citlivý na vstupní data, tudíž nylo nutné, aby se jednotlivé testovací grafy lišily nejenom v počtu uzlů, ale i v počtu hran. 
+Výběr testovacích instancí pro testování a porovnání obou implementovaných algoritmů byl poměrně komplikovaný. Dijkstrův algoritmus je narozdíl od Floyd-Warhsallova citlivý na vstupní data, tudíž bylo nutné, aby se jednotlivé testovací grafy lišily nejenom v počtu uzlů, ale i v počtu hran. 
 \par
 Floyd-Warshallův algoritmus se navíc ukázal být o hodně výkonnějším, tudíž zatímco neoptimalizovaná implementace Dijkstrova algoritmu na nej\-větší instanci za 60 minut na testovacím serveru nedoběhla, Floyd-Warshall ji upočítal za 10 minut.
 \par
@@ -121,7 +126,7 @@ Vybrali jsme tedy grafy o čtyřech různých velikostech, co do počtu uzlů (8
 
 
 \subsection{Měření a porovnání výkonosti různých sekvenčních verzí}
-V následující části jsou uvedeny výsledky meření jednotlivých typů implementací. Údaje jsou uváděny jednak v sekundách (reálná doba běhu na serveru STAR) a v MFPLOPS. Zatímco i Floyd-Warshallova algoritmu můžeme počítat s~$2|V|^3$ operací v plovoucí čárce na jeden běh, u Dijkstrova algoritmu je situace o trochu komplikovanější, protože počet operací v FP závisí na podobě vstupního grafu a odhady pomocí složitosti nebyly příliš přesné. Změřili jsme tedy počet FP operací pro jednotlivé testovací instance.
+V následující části jsou uvedeny výsledky meření jednotlivých typů implementací. Údaje jsou uváděny v MFPLOPS. Zatímco i Floyd-Warshallova algoritmu můžeme počítat s~$2|V|^3$ operací v plovoucí čárce na jeden běh, u Dijkstrova algoritmu je situace o trochu komplikovanější, protože počet operací v FP závisí na podobě vstupního grafu a odhady pomocí složitosti nebyly příliš přesné. Změřili jsme tedy počet FP operací pro jednotlivé testovací instance.
 \begin{table}[H]
   \begin{center}
       \begin{tabular}{|r|r|}
@@ -146,26 +151,32 @@ V následující části jsou uvedeny výsledky meření jednotlivých typů imp
 \end{table}
 
 \subsubsection{Měření Dijkstrova algoritmu}
-V následující tabulce jsou naměřené hodnoty pro Dijkstrův algoritmus. Mě\-ře\-na byla jednak verze, která využívá prioritní frontu z STL, poté verze používající prioritní frontu s podporou operace decreaseKey, třetí verze byla kompilovaná s pře\-pí\-načem \textbf{-O3} a nakonec verze, ve které byly použity další pře\-pí\-nače vypsané v sekci Optimalizovaná verze sekvenčních algoritmů.
+V následující tabulce jsou naměřené hodnoty pro Dijkstrův algoritmus. Mě\-ře\-na byla jednak verze, která využívá prioritní frontu z STL, poté verze používající prioritní frontu s podporou operace decreaseKey, třetí verze byla kompilovaná s pře\-pí\-načem -O3, ve čtvrté verzi byly použity další pře\-pí\-nače vypsané v sekci Optimalizovaná verze sekvenčních algoritmů. Nakonec jsou uvedeny hodnoty měření pro kód po profilingu.
 \par
-Kromě dramatického nárustu výkonu při použití optimalizací kom\-pi\-látoru jde z měření vypozorovat, že Dijkstrův algoritmus je nejsilnější na menších grafech s nízkým počtem hran.
+
+Z měření jde vypozorovat několik souvislostí:
+\begin{itemize}
+ \item Největší vliv na výkon mělo profilování kódu, kde byly odstraněny některé nadbytečné přístupy do paměti. Nicméně program i tak tráví prací s pamětí mnohonásobně více času, než samotnými výpočty. To je ale dáno potřebnou složitější datovou strukturou.
+ \item Změna prioritní fronty z STL implementace na vlastní implementaci program mírně zrychlila.
+ \item Při použití více přepínačů (než -O3) program pro většinu instancí zrychlí, ale výkony jsou mnohem méně stabilní.
+\end{itemize}
 \begin{table}[H]
   \begin{center}
-      \begin{tabular}{|r|r|r|r|r|}
+      \begin{tabular}{|r|r|r|r|r|r|}
       \hline
-      Instance  	& STL	  & BH    & -O3	 & g++ opt  \\ \hline
-      graf800\_80  	& 11,9  & 20,8	  & 50,8 & 50,1         \\ \hline
-      graf800\_400     	& 15,5  & 16,7 	  & 25,5 & 27,9	    \\ \hline
-      graf800\_720  	& 13,0  & 15,9 	  & 28,9 & 32,7	    \\ \hline
-      graf1600\_160    	& 12,3  & 16,9 	  & 28,4 & 27,5	    \\ \hline
-      graf1600\_800  	& 14,4  & 15,6 	  & 26,6 & 30,0	    \\ \hline
-      graf1600\_1400   	& 14,8  & 16,4 	  & 25,4 & 29,7	    \\ \hline
-      graf2400\_240  	& 11,8  & 15,3	  & 25,1 & 23,2         \\ \hline
-      graf2400\_1200   	& 14,2  & 15,4	  & 24,8 & 24,9        \\ \hline
-      graf2400\_2160  	& 14,8  & 12,6	  & 25,1 & 26,9         \\ \hline
-      graf3200\_320    	& 12,3  & 12,7	  & 23,7 & 24,9         \\ \hline
-      graf3200\_1600  	& 14,3  & 14,9	  & 25,0 & 28,0         \\ \hline
-      graf3200\_2880   	& x    	& x 	  & 25,1 & 27,1         \\ \hline
+      Instance  	& STL	  & BH    & -O3	 & k. opt  & prof  \\ \hline
+      graf800\_80  	& 11,9  & 20,8	  & 50,8 & 50,1    & 96,0  \\ \hline
+      graf800\_400     	& 15,5  & 16,7 	  & 25,5 & 27,9	   & 55,0  \\ \hline
+      graf800\_720  	& 13,0  & 15,9 	  & 28,9 & 32,7	   & 52,0  \\ \hline
+      graf1600\_160    	& 12,3  & 16,9 	  & 28,4 & 27,5	   & 47,5  \\ \hline
+      graf1600\_800  	& 14,4  & 15,6 	  & 26,6 & 30,0	   & 50,9  \\ \hline
+      graf1600\_1400   	& 14,8  & 16,4 	  & 25,4 & 29,7	   & 52,1  \\ \hline
+      graf2400\_240  	& 11,8  & 15,3	  & 25,1 & 23,2    & 35,8  \\ \hline
+      graf2400\_1200   	& 14,2  & 15,4	  & 24,8 & 24,9    & 51,6  \\ \hline
+      graf2400\_2160  	& 14,8  & 12,6	  & 25,1 & 26,9    & 49,5  \\ \hline
+      graf3200\_320    	& 12,3  & 12,7	  & 23,7 & 24,9    & 39,0  \\ \hline
+      graf3200\_1600  	& 14,3  & 14,9	  & 25,0 & 28,0    & 52,7  \\ \hline
+      graf3200\_2880   	& x    	& x 	  & 25,1 & 27,1    & 50,0  \\ \hline
       \end{tabular}
   \caption{Naměřené výsledky pro Dijkstrův algoritmus. Hodnoty jsou v~MFLOPS. Políčka, ve kterých je uvedeno x značí, že pro ně algoritmus nedokázal doběhnout ve stanoveném limitu 60 minut.}
   \label{tab:dijkstra1}
