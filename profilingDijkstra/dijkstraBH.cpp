@@ -52,7 +52,7 @@ void CDijkstra::runDijkstraFrom(const int& nodeIndex) {
 		node = m_BinaryHeap->ExtractMin();
 		currentNodeIndex = node->index;
 		currentNodeDistance = node->distance;
-		//delete node;
+		delete node;
 
 		// Relaxace sousedu
 		neighborsArray = (*m_Graph)[currentNodeIndex]->edgesArray;
