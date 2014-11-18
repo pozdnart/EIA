@@ -185,24 +185,24 @@ Z měření jde vypozorovat několik souvislostí:
 
 
 \subsubsection{Měření Floyd-Warshallova algoritmu}
-TODO popis výsledků a efektivity optimalizací.
+Ve prvním sloupci NoOpt jsou výsledky meření výchozího programu bez použití žádných optimalizací. V dalších je kompilace se základní optimalizací kompilátoru -O3. Další měřená verze je po loop tilingu (kompilovaná s -O3 a -ffast-math).
 \begin{table}[H]
   \begin{center}
       \begin{tabular}{|r|r|r|r|r|}
       \hline
-      Instance  	& Základní  & -O3     & ???	 & ???  \\ \hline
-      graf800\_80  	& 129,0     & 975,2   &  &          \\ \hline
-      graf800\_400     	& 130,4     & 890,4   &  &	    \\ \hline
-      graf800\_720  	& 129,3     & 1402,7  &  &	    \\ \hline
-      graf1600\_160    	& 125,2     & 686,7   &  &	    \\ \hline
-      graf1600\_800  	& 125,3     & 688,4   &  &	    \\ \hline
-      graf1600\_1400   	& 125,2     & 680,9   &  &	    \\ \hline
-      graf2400\_240  	& 126,0     & 670,7   &  &          \\ \hline
-      graf2400\_1200   	& 126,1     & 671,0   &  &          \\ \hline
-      graf2400\_2160  	& 126,4     & 670,0   &  &          \\ \hline
-      graf3200\_320    	& 125,8     & 665,6   &  &          \\ \hline
-      graf3200\_1600  	& 126,0     & 663,6   &  &          \\ \hline
-      graf3200\_2880   	& 125,9     & 662,9   &  &          \\ \hline
+      Instance  	& NoOpt	    & -O3     & Tiling	 & ???  \\ \hline
+      graf800\_80  	& 129,0     & 975,2   & 1177,0  &          \\ \hline
+      graf800\_400     	& 130,4     & 890,4   & 1248,7 &	    \\ \hline
+      graf800\_720  	& 129,3     & 1402,7  & 1190,7 &	    \\ \hline
+      graf1600\_160    	& 125,2     & 686,7   & 1233,7 &	    \\ \hline
+      graf1600\_800  	& 125,3     & 688,4   & 1180,4 &	    \\ \hline
+      graf1600\_1400   	& 125,2     & 680,9   & 1177,0 &	    \\ \hline
+      graf2400\_240  	& 126,0     & 670,7   & 1201,0 &          \\ \hline
+      graf2400\_1200   	& 126,1     & 671,0   & 1209,9 &          \\ \hline
+      graf2400\_2160  	& 126,4     & 670,0   & 1326,0 &          \\ \hline
+      graf3200\_320    	& 125,8     & 665,6   & 1276,2 &          \\ \hline
+      graf3200\_1600  	& 126,0     & 663,6   & 1303,2 &          \\ \hline
+      graf3200\_2880   	& 125,9     & 662,9   & 1347,9 &          \\ \hline
       \end{tabular}
   \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
   \label{tab:fw1}
