@@ -93,7 +93,21 @@ V rámci profilingu jsme měřili čas strávený v jednotlivých řádkách kó
 Po všech úpravách profiler ukazuje, že přes 80 \% veškerého času tráví program přístupem do pole, ve kterém jsou uloženy aktuální vzdálenosti. To už se nám nepodařilo vylepšit. Přístup do tohoto pole není sekvenční (získáváme z něj vzdálenosti sousedů uzlu, který je aktuálně vytažen z prioritní fronty, tyto vzdálenosti mohou být na libovolném místě), a proto nemůžeme data z toho pole nějak "předpřipravit" před samotným výpočtem.
 
 \subsection{Floyd-Warshallův algoritmus}
-Byl použit loop-blocking pro lepší využití cache. Algoritmus se tím zrychlil až o polovinu. Testováním nám vyšela optimální hodnota parametru Bf (block factor) 32. Algorimus ma pro každý blok (t,t) 3 fáze. Nejprve se spočítá samotný blok, poté bloky které jsou ve stejném řádku nebo sloupci a nakonec všechny ostatní bloky. Dale je použit loop unrolling, ale nepovedla se vektorizace cyklů, takže to nejspíš neměl efekt na rychost. Kompilace probíhala s vyplou vektorizací. 
+Byl použit loop-blocking pro lepší využití cache. Algoritmus se tím zrychlil až o polovinu. Testováním nám vyšla optimální hodnota parametru Bf (block factor) 32. Algoritmus ma pro každý blok (t,t) 3 fáze. Nejprve se spočítá samotný blok, poté bloky, které jsou ve stejném řádku nebo sloupci a nakonec všechny ostatní bloky. Dále je použit loop unrolling. 
+\par
+Program se nepovedlo zrychlit vektorizací cyklů, která tak nejspíš nemá vliv na rychlost.
+\subsubsection{Přepínače gcc}
+Implementace Floyd-Warshallova algoritmu poskytovala největší výkon při kompilaci s těmito přepínači:
+\begin{itemize}
+ \item \textbf{-O3} - zapnutí plných optimalizací cílového kódu.
+ \item \textbf{-mffast-math} - zrychlené vyhodnocení matematických výrazů.
+\end{itemize}
+Naopak přepínače, které měly negativní vliv na výkon:
+\begin{itemize}
+  \item Celkově vektorizace, tedy přepínače \textbf{-msse4.2}, \textbf{-mfpmath=sse} \\a \textbf{-msseregparm}.
+\end{itemize}
+
+std=c++11 -O3 -ffast-math). 
 
 \subsection{Popis testovacích instancí}
 Výběr testovacích instancí pro testování a porovnání obou implementovaných algoritmů byl poměrně komplikovaný. Dijkstrův algoritmus je narozdíl od Floyd-Warhsallova citlivý na vstupní data, tudíž bylo nutné, aby se jednotlivé testovací grafy lišily nejenom v počtu uzlů, ale i v počtu hran. 
@@ -185,24 +199,24 @@ Z měření jde vypozorovat několik souvislostí:
 
 
 \subsubsection{Měření Floyd-Warshallova algoritmu}
-Ve prvním sloupci NoOpt jsou výsledky meření výchozího programu bez použití žádných optimalizací. V dalších je kompilace se základní optimalizací kompilátoru -O3. Další měřená verze je po loop tilingu (kompilovaná s -O3 a -ffast-math).
+Ve prvním sloupci NoOpt jsou výsledky meření výchozího programu bez použití žádných optimalizací. V dalších je kompilace se základní optimalizací kompilátoru -O3. Další měřená verze je po transformacích kódu popsaných v kapitole 2.2.
 \begin{table}[H]
   \begin{center}
       \begin{tabular}{|r|r|r|r|r|}
       \hline
-      Instance  	& NoOpt	    & -O3     & Tiling	 & ???  \\ \hline
-      graf800\_80  	& 129,0     & 975,2   & 1177,0  &          \\ \hline
-      graf800\_400     	& 130,4     & 890,4   & 1248,7 &	    \\ \hline
-      graf800\_720  	& 129,3     & 1402,7  & 1190,7 &	    \\ \hline
-      graf1600\_160    	& 125,2     & 686,7   & 1233,7 &	    \\ \hline
-      graf1600\_800  	& 125,3     & 688,4   & 1180,4 &	    \\ \hline
-      graf1600\_1400   	& 125,2     & 680,9   & 1177,0 &	    \\ \hline
-      graf2400\_240  	& 126,0     & 670,7   & 1201,0 &          \\ \hline
-      graf2400\_1200   	& 126,1     & 671,0   & 1209,9 &          \\ \hline
-      graf2400\_2160  	& 126,4     & 670,0   & 1326,0 &          \\ \hline
-      graf3200\_320    	& 125,8     & 665,6   & 1276,2 &          \\ \hline
-      graf3200\_1600  	& 126,0     & 663,6   & 1303,2 &          \\ \hline
-      graf3200\_2880   	& 125,9     & 662,9   & 1347,9 &          \\ \hline
+      Instance  	& NoOpt	    & -O3     & Transf	   \\ \hline
+      graf800\_80  	& 129,0     & 975,2   & 1177,0     \\ \hline
+      graf800\_400     	& 130,4     & 890,4   & 1248,7     \\ \hline
+      graf800\_720  	& 129,3     & 1402,7  & 1190,7     \\ \hline
+      graf1600\_160    	& 125,2     & 686,7   & 1233,7     \\ \hline
+      graf1600\_800  	& 125,3     & 688,4   & 1180,4 	    \\ \hline
+      graf1600\_1400   	& 125,2     & 680,9   & 1177,0 	    \\ \hline
+      graf2400\_240  	& 126,0     & 670,7   & 1201,0           \\ \hline
+      graf2400\_1200   	& 126,1     & 671,0   & 1209,9           \\ \hline
+      graf2400\_2160  	& 126,4     & 670,0   & 1326,0           \\ \hline
+      graf3200\_320    	& 125,8     & 665,6   & 1276,2           \\ \hline
+      graf3200\_1600  	& 126,0     & 663,6   & 1303,2           \\ \hline
+      graf3200\_2880   	& 125,9     & 662,9   & 1347,9           \\ \hline
       \end{tabular}
   \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
   \label{tab:fw1}
@@ -225,6 +239,9 @@ Ve prvním sloupci NoOpt jsou výsledky meření výchozího programu bez použi
   \bibitem[1]{Kolar} KOLÁŘ, Josef.
     \emph{Teoretická informatika}.
     Česká informatická společnost, Praha, 2004. 205s.
+  \bibitem[2]{FwBlock} LUND, Ben, SMITH, Justin W..
+    \emph{A Multi-Stage CUDA Kernel for Floyd-Warshall}.
+    [online]. Dostupné z: \url{http://arxiv.org/pdf/1001.4108.pdf}. [cit 11-18-2014]. 2010.
 \end{thebibliography}
 
 \end{document}
