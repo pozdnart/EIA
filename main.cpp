@@ -41,9 +41,10 @@ int main(int argc, char* const argv[]) {
                 double ** matrix;
                 CDijkstra dijkstra = CDijkstra(graph);
                 clock_t begin = clock();
-                matrix = dijkstra.CalculateDistanceMatrix();
+                //matrix = dijkstra.CalculateDistanceMatrix();
                 clock_t end = clock();
                 //printMatrix(ofs, matrix, graph->size());
+
                 //ofs.close();
 
                 double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
@@ -52,14 +53,30 @@ int main(int argc, char* const argv[]) {
 
                 //ofs.open("floydwarshall.out");
                 //if(!ofs.is_open()) throw IOException();
+
+                int blockSize = 36;
+                while(graph->size() % blockSize != 0) ++blockSize;
+
                 begin = clock();
-                matrix = floydWarschall(graph);
+                matrix = floydWarschall(graph, blockSize);
                 end = clock();
                 //printMatrix(ofs, matrix, graph->size());
                 //ofs.close();
                 elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
                 cout << "FloydWarshall:\t" << elapsed_secs << " sec" << endl;
+
+                /*double ** matrix;
+
+                for(unsigned i = 1; i < 1080; ++i) {
+                    if(1080 % i == 0)
+                    {
+                        clock_t begin = clock();
+                        matrix = floydWarschall(graph, i);
+                        clock_t end = clock();
+                        cout << i << " " << double(end - begin) / CLOCKS_PER_SEC << endl;
+                    }
+                }*/
 
                 break;
             }
