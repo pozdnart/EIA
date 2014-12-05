@@ -1,4 +1,5 @@
 #include "dijkstraBH.hpp"
+#include <omp.h>
 
 using namespace std;
 
@@ -26,11 +27,11 @@ CDijkstra::~CDijkstra() {
 
 double** CDijkstra::CalculateDistanceMatrix() {
 	// kopii tridnich promennych
-	double** distanceMatrix; // ??? private nebo shared
+	double** distanceMatrix = m_DistanceMatrix;
 	double* currentDistances;
-	MyGraph* graph;
+	MyGraph* graph = m_Graph;
 	CBinaryHeap* binaryHeap;
-	unsigned nodesCount;
+	unsigned nodesCount = m_Graph->size();
 	// ridici promenna cyklu
 	unsigned sourceNode;
 	unsigned localLoopVarI;
@@ -42,15 +43,17 @@ double** CDijkstra::CalculateDistanceMatrix() {
 	Edge* currentEdge;
 	unsigned neighborsCount;
 	TBHNode* node;
+	// inicializace vlakna
+	bool initialized = false;
 
-	#pragma omp parallel for private(distanceMatrix, currentDistances, graph, binaryHeap, nodesCount, sourceNode, localLoopVarI, currentNodeIndex, targetNodeIndex, currentNodeDistance, newDistance, currentEdgeLength, neighborsArray, currentEdge, neighborsCount, node) num_threads(4)
-	for (sourceNode = 0; sourceNode < m_Graph->size(); sourceNode++) {
+	#pragma omp parallel for firstprivate(initialized, graph, nodesCount, distanceMatrix) private(currentDistances, binaryHeap, sourceNode, localLoopVarI, currentNodeIndex, targetNodeIndex, currentNodeDistance, newDistance, currentEdgeLength, neighborsArray, currentEdge, neighborsCount, node) num_threads(4) schedule(guided) 
+	for (sourceNode = 0; sourceNode < nodesCount; sourceNode++) {
 		// inicializace tridnich promennych
-		graph = m_Graph;
-		nodesCount = graph->size();
-		distanceMatrix = m_DistanceMatrix;
-		currentDistances = new double[nodesCount];
-		binaryHeap = new CBinaryHeap(nodesCount);
+		if (!initialized) {
+			initialized = true;
+			binaryHeap = new CBinaryHeap(nodesCount);
+			currentDistances = new double[nodesCount];
+		}
 
 		// samotny beh DA z aktualniho uzlu, puvodne (runDijkstraFrom)
 			// prepareDistances()
@@ -68,10 +71,9 @@ double** CDijkstra::CalculateDistanceMatrix() {
 				node = binaryHeap->ExtractMin();
 				currentNodeIndex = node->index;
 				currentNodeDistance = node->distance;
-				delete node;
 				// Relaxace sousedu
-				neighborsArray = (*m_Graph)[currentNodeIndex]->edgesArray;
-				neighborsCount = (*m_Graph)[currentNodeIndex]->neighborsCount;
+				neighborsArray = (*graph)[currentNodeIndex]->edgesArray;
+				neighborsCount = (*graph)[currentNodeIndex]->neighborsCount;
 				for (localLoopVarI = 0; localLoopVarI < neighborsCount; localLoopVarI++) {
 					// Pokud jsme nasli kratsi cestu k nejakemu sousedovi, ulozime ji a sousedni uzel znovu vlozime do fronty s novou vzdalenosti
 				   	currentEdge = neighborsArray[localLoopVarI];
@@ -79,7 +81,6 @@ double** CDijkstra::CalculateDistanceMatrix() {
 					targetNodeIndex = currentEdge->targetIndex;
 
 					if (currentDistances[targetNodeIndex] > currentNodeDistance + currentEdgeLength) {
-						
 						newDistance = currentNodeDistance + currentEdgeLength;
 						binaryHeap->DecreaseKey(targetNodeIndex, newDistance);
 						currentDistances[targetNodeIndex] = newDistance;
@@ -89,14 +90,9 @@ double** CDijkstra::CalculateDistanceMatrix() {
 
 		// ulozeni spoctenych vzdalenosti (puvodne storeCalculatedDistances)
 			for (localLoopVarI = 0; localLoopVarI < nodesCount; localLoopVarI++) {
-				// distanceMatrix je sdilena promenna
 				#pragma omp critical
 				distanceMatrix[sourceNode][localLoopVarI] = currentDistances[localLoopVarI];
 			}
-
-		// uklid lokalnich
-			delete [] currentDistances;
-			delete binaryHeap;
 	}
 
 	return m_DistanceMatrix;

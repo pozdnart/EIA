@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <omp.h>
 
 using namespace std;
 
@@ -35,33 +36,20 @@ int main(int argc, char* const argv[]) {
 
                 ofstream ofs;
 
-                ofs.open("dijkstra.out");
-                if(!ofs.is_open()) throw IOException();
+                //ofs.open("dijkstra.out");
+                //if(!ofs.is_open()) throw IOException();
                 
-                struct timespec start, finish;
-                double elapsed;
-
-
                 double ** matrix;
                 CDijkstra dijkstra = CDijkstra(graph);
 
-                clock_t begin = clock();
-                clock_gettime(CLOCK_MONOTONIC, &start);
-
+                double time1 = omp_get_wtime();
                 matrix = dijkstra.CalculateDistanceMatrix();
+                double time2 = omp_get_wtime();
 
-                clock_gettime(CLOCK_MONOTONIC, &finish);
-                clock_t end = clock();
+                //printMatrix(ofs, matrix, graph->size());
+                //ofs.close();
 
-                printMatrix(ofs, matrix, graph->size());
-                ofs.close();
-
-                double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-                elapsed = (finish.tv_sec - start.tv_sec);
-                elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-
-                cout << "Dijkstra:\t" << elapsed_secs << " sec " << "monotonic: " << elapsed << endl;
-
+                cout << "omptime: " << time2 - time1 << endl;
                 //ofs.open("floydwarshall.out");
                 //if(!ofs.is_open()) throw IOException();
                 //begin = clock();
