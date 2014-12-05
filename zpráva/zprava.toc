@@ -17,4 +17,8 @@
 \contentsline {subsubsection}{\numberline {2.4.1}M\IeC {\v e}\IeC {\v r}en\IeC {\'\i } Dijkstrova algoritmu}{8}{subsubsection.2.4.1}
 \contentsline {subsubsection}{\numberline {2.4.2}M\IeC {\v e}\IeC {\v r}en\IeC {\'\i } Floyd-Warshallova algoritmu}{9}{subsubsection.2.4.2}
 \contentsline {section}{\numberline {3}V\IeC {\'\i }cevl\IeC {\'a}knov\IeC {\'a} implementace}{10}{section.3}
-\contentsline {section}{\numberline {4}Z\IeC {\'a}v\IeC {\v e}r}{10}{section.4}
+\contentsline {subsection}{\numberline {3.1}Dijkstr\IeC {\r u}v algoritmus}{10}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}M\IeC {\v e}\IeC {\v r}en\IeC {\'\i }}{10}{subsubsection.3.1.1}
+\contentsline {subsection}{\numberline {3.2}Floyd-Warshall\IeC {\r u}v algoritmus}{13}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}M\IeC {\v e}\IeC {\v r}en\IeC {\'\i }}{13}{subsubsection.3.2.1}
+\contentsline {section}{\numberline {4}Z\IeC {\'a}v\IeC {\v e}r}{14}{section.4}
