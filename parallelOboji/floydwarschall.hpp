@@ -17,7 +17,7 @@ double ** floydWarschall(MyGraph * graph, int & s) {
     int bs = 0;
     int b1s = s;
 
-    #pragma omp parallel firstprivate(bs,b1s)
+    #pragma omp parallel firstprivate(bs,b1s) num_threads(4)
     while(bs < size) { // Kazdej blok to zpracuje
         #pragma omp  for schedule(static,numberOfChunk)
         for(int k = bs; k < b1s; ++k) { // tohle zpracuje samotny blok

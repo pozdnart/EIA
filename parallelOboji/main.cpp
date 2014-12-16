@@ -19,7 +19,7 @@ void printMatrix(ofstream & ofs, double ** matrix, unsigned int size) {
 
 
 /**
- * Kompilace: $ g++ -std=c++11 -Wall -pedantic main.cpp mygraph.cpp edge.cpp node.cpp dijkstra.cpp -o graph
+ * g++ -std=c++11 -O3 -ffast-math -fopenmp main.cpp mygraph.cpp exception.hpp node.cpp edge.cpp floydwarschall.hpp dijkstraBH.cpp binary_heap.cpp -o graph
  * ./graph [string] ... Spusti program, nacte ze souboru.
  * ./graph [string] [unsigned int] [unsigned int] ... Generuje graf do souboru,
  * druhy parametr je pocet uzlu a treti parametr pocet hran, ktere v prumeru
@@ -40,17 +40,18 @@ int main(int argc, char* const argv[]) {
                 ofs.open("dijkstra.out");
                 if(!ofs.is_open()) throw IOException();
 
+
                 CDijkstra dijkstra = CDijkstra(graph);
-                clock_t begin = clock();
+                double time1 = omp_get_wtime();
                 matrix = dijkstra.CalculateDistanceMatrix();
-                clock_t end = clock();
+                double time2 = omp_get_wtime();
                 printMatrix(ofs, matrix, graph->size());
+
+                cout << "Dijktsra: " << time2 - time1 << endl;
 
                 ofs.close();
 
-                double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-
-                cout << "Dijkstra:\t" << elapsed_secs << " sec" << endl;
+                //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
                 ofs.open("floydwarshall.out");
                 if(!ofs.is_open()) throw IOException();
@@ -58,19 +59,14 @@ int main(int argc, char* const argv[]) {
                 int blockSize = 20;
                 while(graph->size() % blockSize != 0) ++blockSize;
 
-                auto t1 = std::chrono::high_resolution_clock::now();
+                time1 = omp_get_wtime();
                 matrix = floydWarschall(graph, blockSize);
-                auto t2 = std::chrono::high_resolution_clock::now();
-
-
+                time2 = omp_get_wtime();
+                cout << "FloydWarshall: " << time2 - time1 << endl;
 
                 printMatrix(ofs, matrix, graph->size());
                 delete [] matrix;
                 ofs.close();
-
-                cout << "FloydWarshall:\t"
-                << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() / 1000.0
-                << " sec" << endl;
 
                 break;
             }
