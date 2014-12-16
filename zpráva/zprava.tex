@@ -92,9 +92,8 @@ V rámci profilingu jsme měřili čas strávený v jednotlivých řádkách kó
 Po všech úpravách profiler ukazuje, že přes 80 \% veškerého času tráví program přístupem do pole, ve kterém jsou uloženy aktuální vzdálenosti. To už se nám nepodařilo vylepšit. Přístup do tohoto pole není sekvenční (získáváme z něj vzdálenosti sousedů uzlu, který je aktuálně vytažen z prioritní fronty, tyto vzdálenosti mohou být na libovolném místě), a proto nemůžeme data z toho pole nějak "předpřipravit" před samotným výpočtem.
 
 \subsection{Floyd-Warshallův algoritmus}
-Byl použit loop-blocking pro lepší využití cache. Algoritmus se tím zrychlil až o polovinu. Testováním nám vyšla optimální hodnota parametru Bf (block factor) 32. Algoritmus ma pro každý blok (t,t) 3 fáze. Nejprve se spočítá samotný blok, poté bloky, které jsou ve stejném řádku nebo sloupci a nakonec všechny ostatní bloky. Dále je použit loop unrolling. 
-\par
-Program se nepovedlo zrychlit vektorizací cyklů, která tak nejspíš nemá vliv na rychlost.
+Byl použit loop-blocking pro lepší využití cache. Algoritmus se tím zrychlil až o polovinu. Testováním nám vyšla optimální hodnota parametru Bf (block factor) 32. Algoritmus ma pro každý blok (t,t) 3 fáze. Nejprve se spočítá samotný blok, poté bloky, které jsou ve stejném řádku nebo sloupci a nakonec všechny ostatní bloky. Dále je použit loop unrolling a vektorizaze, ta ale nemela moc velky efekt. Byly pouzity intrinsic instrukce, vektorizace pomoci kompilatoru se nezdarila.
+
 \subsubsection{Přepínače gcc}
 Implementace Floyd-Warshallova algoritmu poskytovala největší výkon při kompilaci s těmito přepínači:
 \begin{itemize}
@@ -216,7 +215,7 @@ Ve prvním sloupci NoOpt jsou výsledky meření výchozího programu bez použi
       graf3200\_2880   	& 125,9     & 662,9   & 1347,9           \\ \hline
       \end{tabular}
   \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
-  \label{tab:fw1}
+  \label{tab:fw2}
   \end{center}
 \end{table}
 
@@ -328,9 +327,42 @@ Pro úplnost v tabulce níže uvádím přepočet konečných výsledků do MFLO
 Z měření je vidět téměř 6násobné zrychlení oproti jednovláknové implementaci. Jde tedy přibližně o poloviční využití teoretické výpočetní síly všech 12 jader procesoru.
 
 \subsection{Floyd-Warshallův algoritmus}
-TODO: Popis vícevláknové implementace.
+Kvuli loop-blockingu se se algoritmus paralelizoval snadno. Staci dodrzet, aby se nejprve spocitaly samotne bloky, pote bloky na stejnem radku a sloupci a pote zbytek. Paralelizoval se kazdy z techto cyklu. Vlakna byla vytvorena hned na zacatku, kvuli zmenseni rezie cyklu. Jine planovani vlaken nez static by nemelo mit pozitivni vliv na rychlost algoritmu, protoze jsou bloky stejne velke.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[scale=0.9]{bf.png}
+  \end{center}
+  \caption{Porovnani jednotlivych velikosti BF.}\label{graf:fig8}
+\end{figure}
+
+Velikost bloku BF jsme zvolili 50.
 \subsubsection{Měření}
-TODO: Výsledky měření a komentář k nim.
+Pro porovnani vykonnosti je tu sequencni neoptimalizovana verze, optimalizovana verze pouze pomoci kompilatoru, celkove optimalizovana a paralelni verze.
+
+\begin{table}[H]
+  \begin{center}
+      \begin{tabular}{|r|r|r|r|r|}
+      \hline
+      Instance  	& NoOpt	    & -O3     & SeqOpt	& Paralelni	\\ \hline
+      graf800\_80  	& 129,0     & 975,2   & 1177,0	& 5779,8     	\\ \hline
+      graf800\_400     	& 130,4     & 890,4   & 1248,7	& 5779,8     	\\ \hline
+      graf800\_720  	& 129,3     & 1402,7  & 1190,7	& 5779,8     	\\ \hline
+      graf1600\_160    	& 125,2     & 686,7   & 1233,7	& 7204,3     	\\ \hline
+      graf1600\_800  	& 125,3     & 688,4   & 1180,4	& 7183,9    	\\ \hline
+      graf1600\_1400   	& 125,2     & 680,9   & 1177,0	& 7335,9    	\\ \hline
+      graf2400\_240  	& 126,0     & 670,7   & 1201,0	& 8104,8       	\\ \hline
+      graf2400\_1200   	& 126,1     & 671,0   & 1209,9	& 8097,2      	\\ \hline
+      graf2400\_2160  	& 126,4     & 670,0   & 1326,0	& 8145,9       	\\ \hline
+      graf3200\_320    	& 125,8     & 665,6   & 1276,2	& 8003,5       	\\ \hline
+      graf3200\_1600  	& 126,0     & 663,6   & 1303,2	& 8041,5       	\\ \hline
+      graf3200\_2880   	& 125,9     & 662,9   & 1347,9	& 8135,8       	\\ \hline
+      \end{tabular}
+  \caption{Naměřené výsledky pro Floyd-Warshallův algoritmus. Hodnoty jsou v~MFLOPS.}
+  \label{tab:fw1}
+  \end{center}
+\end{table}
+Z měření je vidět vice nez sestinasobné zrychlení oproti jednovláknové implementaci.
 
 \newpage
 
